@@ -185,15 +185,19 @@ class ASRData:
 
     def remove_punctuation(self) -> "ASRData":
         """
-        移除字幕中的标点符号(中文逗号、句号)
+        移除字幕中的标点符号(中文逗号、句号)，
+        句末标点直接去除，句中标点替换为空格
         """
-        punctuation = r"[，。]"
+        punctuation = r"[，。！？、]"
         for seg in self.segments:
-
+            # 先去除句末标点
             seg.text = re.sub(f"{punctuation}+$", "", seg.text.strip())
             seg.translated_text = re.sub(
                 f"{punctuation}+$", "", seg.translated_text.strip()
             )
+            # 替换句中标点为空格
+            seg.text = re.sub(punctuation, " ", seg.text)
+            seg.translated_text = re.sub(punctuation, " ", seg.translated_text)
         return self
 
     def save(
